@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="NEXORA.API/NEXORA.API.csproj" />
+  <Project Path="NEXORA.Application/NEXORA.Application.csproj" />
+  <Project Path="NEXORA.Domain/NEXORA.Domain.csproj" />
+  <Project Path="NEXORA.Infrastructure/NEXORA.Infrastructure.csproj" />
+</Solution>
