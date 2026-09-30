@@ -34,13 +34,13 @@ describe('US11 protección de rutas y menú', () => {
 
   it('oculta Usuarios para Cliente en el menú principal', async () => {
     sessionStorage.setItem('usuario', JSON.stringify({ id: 2, nombre: 'Juan Pérez', contrasena: 'clave456', rol: 'cliente' }));
-    const harness = await RouterTestingHarness.create('/');
+    const harness = await RouterTestingHarness.create('/producto-detalle');
     expect(harness.routeNativeElement?.querySelector('a[href="/usuarios"]')).toBeNull();
   });
 
   it('muestra Usuarios para Admin en el menú principal', async () => {
     sessionStorage.setItem('usuario', JSON.stringify({ id: 1, nombre: 'María Isabel', contrasena: 'clave123', rol: 'admin' }));
-    const harness = await RouterTestingHarness.create('/');
+    const harness = await RouterTestingHarness.create('/producto-detalle');
     expect(harness.routeNativeElement?.querySelector('a[href="/usuarios"]')).not.toBeNull();
   });
 });

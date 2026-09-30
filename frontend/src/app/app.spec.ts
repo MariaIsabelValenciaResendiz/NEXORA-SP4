@@ -22,7 +22,7 @@ describe('App', () => {
   });
 
   it('should render the US09 product detail', async () => {
-    const harness = await RouterTestingHarness.create('/');
+    const harness = await RouterTestingHarness.create('/producto-detalle');
     expect(harness.routeNativeElement?.querySelector('h2')?.textContent).toContain('Bolso Nómada');
   });
 });
