@@ -3,16 +3,19 @@ import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CarritoService } from '../../services/carrito.service';
 import { RolUsuario } from '../../models/articulo-carrito.model';
+import { RouterLink } from '@angular/router';
+import { SesionUsuariosService } from '../../../usuarios/services/sesion-usuarios.service';
 
 type Pantalla = 'tienda' | 'carrito' | 'cuenta';
 
 @Component({
   selector: 'app-producto-detalle',
-  imports: [CurrencyPipe, FormsModule],
+  imports: [CurrencyPipe, FormsModule, RouterLink],
   templateUrl: './producto-detalle.html',
 })
 export class ProductoDetalleComponent {
   protected readonly carritoService = inject(CarritoService);
+  protected readonly sesionUsuarios = inject(SesionUsuariosService);
   protected readonly pantalla = signal<Pantalla>('tienda');
   protected readonly cantidad = signal(1);
   protected readonly mensaje = signal('');

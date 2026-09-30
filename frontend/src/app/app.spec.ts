@@ -1,10 +1,16 @@
 import { TestBed } from '@angular/core/testing';
 import { App } from './app';
+import { provideRouter } from '@angular/router';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { RouterTestingHarness } from '@angular/router/testing';
+import { routes } from './app.routes';
 
 describe('App', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [App],
+      providers: [provideRouter(routes), provideHttpClient(), provideHttpClientTesting()],
     })
       .compileComponents();
   });
@@ -16,9 +22,7 @@ describe('App', () => {
   });
 
   it('should render the US09 product detail', async () => {
-    const fixture = TestBed.createComponent(App);
-    await fixture.whenStable();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h2')?.textContent).toContain('Bolso Nómada');
+    const harness = await RouterTestingHarness.create('/');
+    expect(harness.routeNativeElement?.querySelector('h2')?.textContent).toContain('Bolso Nómada');
   });
 });
