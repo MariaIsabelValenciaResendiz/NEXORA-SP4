@@ -9,7 +9,7 @@ import { RouterLink } from '@angular/router';
       <main class="screen-content">
         <h1>Acceso restringido</h1>
         <p role="alert">Tu perfil no tiene permisos para abrir esta sección.</p>
-        <a routerLink="/">Volver a la tienda</a>
+        <a routerLink="/producto-detalle">Volver a la tienda</a>
       </main>
     </div>
   `,
