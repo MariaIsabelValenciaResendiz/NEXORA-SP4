@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { finalize, Observable } from 'rxjs';
+import { finalize, Observable, tap } from 'rxjs';
 import { NuevoProducto, Producto } from '../models/producto.model';
 import { SesionUsuariosService } from '../usuarios/services/sesion-usuarios.service';
 
@@ -15,6 +15,7 @@ export class ProductoService {
   private readonly cargandoEstado = signal(false);
   private readonly errorEstado = signal('');
   private readonly categoriaEstado = signal('Todos');
+  private catalogoCargado = false;
 
   readonly categorias = ['Todos', 'Ropa', 'Accesorios'] as const;
   readonly productos = this.productosEstado.asReadonly();
@@ -31,11 +32,12 @@ export class ProductoService {
   });
 
   cargar(forzar = false): void {
-    if (this.cargandoEstado() || (!forzar && this.productosEstado().length > 0)) return;
+    if (this.cargandoEstado() || (!forzar && this.catalogoCargado)) return;
 
     this.errorEstado.set('');
     const authorization = this.sesion.autorizacion();
     if (!this.sesion.puedeConsultarCatalogo() || !authorization) {
+      this.catalogoCargado = false;
       this.productosEstado.set([]);
       this.errorEstado.set('Tu sesión no tiene permiso para consultar el catálogo.');
       return;
@@ -47,8 +49,12 @@ export class ProductoService {
       .get<Producto[]>(this.apiUrl, { headers: { Authorization: authorization } })
       .pipe(finalize(() => this.cargandoEstado.set(false)))
       .subscribe({
-        next: (productos) => this.productosEstado.set(productos),
+        next: (productos) => {
+          this.productosEstado.set(productos);
+          this.catalogoCargado = true;
+        },
         error: () => {
+          this.catalogoCargado = false;
           this.productosEstado.set([]);
           this.errorEstado.set('No pudimos cargar el catálogo. Verifica tu conexión e intenta nuevamente.');
         },
@@ -64,6 +70,15 @@ export class ProductoService {
   }
 
   registrar(producto: NuevoProducto): Observable<Producto> {
-    return this.http.post<Producto>(this.apiUrl, producto);
+    return this.http.post<Producto>(this.apiUrl, producto).pipe(
+      tap((productoRegistrado) => {
+        if (!this.catalogoCargado) return;
+
+        this.productosEstado.update((productos) => [
+          ...productos.filter((productoActual) => productoActual.id !== productoRegistrado.id),
+          productoRegistrado,
+        ]);
+      }),
+    );
   }
 }
