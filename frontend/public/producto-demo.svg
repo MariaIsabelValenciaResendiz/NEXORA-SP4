@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 200" role="img" aria-labelledby="title desc">
+  <title id="title">Bolso Nómada</title>
+  <desc id="desc">Ilustración de un bolso blanco sobre fondo beige.</desc>
+  <rect width="360" height="200" rx="22" fill="#f0e8d8"/>
+  <path d="M145 81c0-22 16-39 35-39s35 17 35 39" fill="none" stroke="#b59a68" stroke-width="16" stroke-linecap="round"/>
+  <rect x="109" y="76" width="142" height="82" rx="9" fill="#fff"/>
+</svg>
