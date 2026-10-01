@@ -7,17 +7,30 @@ using Microsoft.AspNetCore.Authentication;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton<NEXORA.Infrastructure.UsuarioRepositoryMemoria>();
+
 builder.Services.AddSingleton<NEXORA.Application.IUsuarioRepository>(services =>
     services.GetRequiredService<NEXORA.Infrastructure.UsuarioRepositoryMemoria>());
+
 builder.Services.AddSingleton<IConsultaUsuarios>(services =>
     services.GetRequiredService<NEXORA.Infrastructure.UsuarioRepositoryMemoria>());
+
 builder.Services.AddSingleton<IAccesoUsuarios>(services =>
     services.GetRequiredService<NEXORA.Infrastructure.UsuarioRepositoryMemoria>());
+
 builder.Services.AddScoped<NEXORA.Application.UsuarioService>();
 builder.Services.AddScoped<IListarUsuarios, ListarUsuarios>();
 
+builder.Services.AddScoped<
+    NEXORA.Application.IProductoRepository,
+    NEXORA.Infrastructure.ProductoRepositoryMemoria>();
+
+builder.Services.AddScoped<NEXORA.Application.ProductoService>();
+
 builder.Services.AddAuthentication()
-    .AddScheme<AuthenticationSchemeOptions, UsuariosBasicHandler>(UsuariosBasicHandler.NombreEsquema, _ => { });
+    .AddScheme<AuthenticationSchemeOptions, UsuariosBasicHandler>(
+        UsuariosBasicHandler.NombreEsquema,
+        _ => { });
+
 builder.Services.AddAuthorization();
 
 builder.Services.AddControllers();
@@ -43,8 +56,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors("PermitirAngular");
+
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
 
 app.Run();
