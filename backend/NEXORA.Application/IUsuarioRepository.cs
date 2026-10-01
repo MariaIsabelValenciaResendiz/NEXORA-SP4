@@ -7,4 +7,5 @@ public interface IUsuarioRepository
     List<Usuario> ObtenerTodos();
     Usuario? ObtenerPorId(int id);
     void Agregar(Usuario usuario);
+    Usuario? ObtenerPorCredenciales(string nombre, string contrasena);
 }
