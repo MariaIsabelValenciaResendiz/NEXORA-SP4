@@ -1,62 +1,103 @@
-<main class="store-page">
+<div class="app-shell">
   <header class="topbar">
-    <a class="brand" href="/">NEXORA</a>
-    <div class="session-tools">
-      <label for="role">Rol de demostración</label>
-      <select id="role" [value]="carritoService.rol()" (change)="actualizarRol($event)">
-        <option value="Cliente">Cliente</option>
-        <option value="Auditor">Auditor</option>
-      </select>
-      <span class="cart-count" aria-live="polite">Carrito: {{ carritoService.cantidadTotal() }}</span>
+    <div class="brand-lockup" aria-label="NEXORA">
+      <span class="brand-mark">N</span>
+      <span class="brand-name">NEXORA</span>
     </div>
+    <span class="role-badge">{{ carritoService.rol() }}</span>
   </header>
 
-  <section class="product-card" aria-labelledby="product-title">
-    <div class="image-frame">
-      <img [src]="carritoService.producto.imagen" [alt]="carritoService.producto.titulo" />
-    </div>
-    <div class="product-info">
-      <p class="eyebrow">Detalle del producto · US09</p>
-      <h1 id="product-title">{{ carritoService.producto.titulo }}</h1>
-      <p class="description">{{ carritoService.producto.descripcion }}</p>
-      <p class="price">{{ carritoService.producto.precio | currency:'USD' }}</p>
-
-      @if (carritoService.esCliente()) {
-        <div class="purchase-controls">
-          <label for="quantity">Cantidad</label>
-          <input id="quantity" type="number" min="1" step="1" [ngModel]="cantidad()" (ngModelChange)="cantidad.set($event)" />
-          <button type="button" (click)="agregarAlCarrito()" [disabled]="cargando()">
-            {{ cargando() ? 'Agregando…' : 'Agregar al carrito' }}
-          </button>
+  <main class="screen-content">
+    @if (pantalla() === 'tienda') {
+      <section class="detail-screen" aria-labelledby="detail-title">
+        <h1 id="detail-title">Detalle</h1>
+        <div class="product-image">
+          <img [src]="carritoService.producto.imagen" [alt]="carritoService.producto.titulo" />
         </div>
-      } @else {
-        <p class="read-only" role="status">Tu perfil de Auditor tiene acceso de solo lectura.</p>
-      }
+        <div class="product-heading">
+          <h2>{{ carritoService.producto.titulo }}</h2>
+          <span class="product-price">{{ carritoService.producto.precio | currency:'USD' }}</span>
+        </div>
+        <span class="category-badge">ACCESORIOS</span>
+        <p class="description">{{ carritoService.producto.descripcion }}</p>
 
-      @if (mensaje()) { <p class="success" role="status">{{ mensaje() }}</p> }
-      @if (error()) { <p class="error" role="alert">{{ error() }}</p> }
-    </div>
-  </section>
+        <div class="detail-feedback">
+          @if (mensaje()) { <p class="success" role="status">{{ mensaje() }}</p> }
+          @if (error()) { <p class="error" role="alert">{{ error() }}</p> }
+        </div>
 
-  <section class="cart-summary" aria-labelledby="cart-title">
-    <div class="summary-heading">
-      <div>
-        <p class="eyebrow">Sesión actual</p>
-        <h2 id="cart-title">Mi carrito</h2>
-      </div>
-      <span>{{ carritoService.cantidadTotal() }} artículos</span>
-    </div>
-    @if (carritoService.carrito().length === 0) {
-      <p class="empty">Aún no agregas productos.</p>
-    } @else {
-      <ul>
-        @for (item of carritoService.carrito(); track item.productoId) {
-          <li>
-            <span>{{ item.titulo }}</span>
-            <span>{{ item.cantidad }} × {{ item.precio | currency:'USD' }}</span>
-          </li>
+        @if (carritoService.esCliente()) {
+          <div class="purchase-actions">
+            <div class="quantity-stepper" aria-label="Cantidad del producto">
+              <button type="button" aria-label="Disminuir cantidad" (click)="cambiarCantidad(-1)">−</button>
+              <span aria-live="polite">{{ cantidad() }}</span>
+              <button type="button" aria-label="Aumentar cantidad" (click)="cambiarCantidad(1)">+</button>
+            </div>
+            <button class="primary-button" type="button" (click)="agregarAlCarrito()" [disabled]="cargando()">
+              {{ cargando() ? 'Agregando…' : 'Añadir al carrito' }}
+            </button>
+          </div>
         }
-      </ul>
+      </section>
+    } @else if (pantalla() === 'carrito') {
+      <section class="cart-screen" aria-labelledby="cart-title">
+        <h1 id="cart-title">Mi carrito</h1>
+        @if (carritoService.carrito().length === 0) {
+          <div class="empty-cart">
+            <span class="empty-count">0</span>
+            <h2>Tu carrito está vacío</h2>
+            <p>Explora el catálogo y agrega productos.</p>
+            <button class="primary-button explore-button" type="button" (click)="cambiarPantalla('tienda')">Explorar tienda</button>
+          </div>
+        } @else {
+          <div class="cart-list">
+            @for (item of carritoService.carrito(); track item.productoId) {
+              <article class="cart-item">
+                <img [src]="item.imagen" [alt]="item.titulo" />
+                <div class="cart-item-info">
+                  <h2>{{ item.titulo }}</h2>
+                  <p>{{ item.precio | currency:'USD' }}</p>
+                  <span class="item-quantity">Cantidad: {{ item.cantidad }}</span>
+                </div>
+              </article>
+            }
+          </div>
+          <div class="cart-total">
+            <span>Total</span>
+            <strong>{{ carritoService.totalCarrito() | currency:'USD' }}</strong>
+          </div>
+          <button class="primary-button checkout-button" type="button" disabled>Proceder al pago</button>
+        }
+      </section>
+    } @else {
+      <section class="account-screen" aria-labelledby="account-title">
+        <h1 id="account-title">Mi cuenta</h1>
+        <div class="profile-heading">
+          <span class="avatar">CD</span>
+          <h2>Cliente Demo</h2>
+          <p>cliente.demo&#64;nexora.mx</p>
+        </div>
+        <div class="account-row"><span>Perfil</span><strong>{{ carritoService.rol() }}</strong></div>
+        <div class="account-row"><span>Carrito local</span><strong>{{ carritoService.cantidadTotal() }} productos</strong></div>
+        <div class="account-row"><span>Sesión</span><strong>Activa</strong></div>
+        <label class="demo-role-label" for="role">Cambiar rol de demostración</label>
+        <select id="role" [value]="carritoService.rol()" (change)="actualizarRol($event)">
+          <option value="Cliente">Cliente</option>
+          <option value="Auditor">Auditor</option>
+        </select>
+      </section>
     }
-  </section>
-</main>
+  </main>
+
+  <nav class="bottom-nav" aria-label="Navegación principal">
+    <button type="button" [class.active]="pantalla() === 'tienda'" (click)="cambiarPantalla('tienda')">
+      <span class="nav-icon">H</span><span>Tienda</span>
+    </button>
+    <button type="button" [class.active]="pantalla() === 'carrito'" (click)="cambiarPantalla('carrito')">
+      <span class="nav-icon">C</span><span>Carrito@if (carritoService.cantidadTotal() > 0) { <small>{{ carritoService.cantidadTotal() }}</small> }</span>
+    </button>
+    <button type="button" [class.active]="pantalla() === 'cuenta'" (click)="cambiarPantalla('cuenta')">
+      <span class="nav-icon">U</span><span>Cuenta</span>
+    </button>
+  </nav>
+</div>

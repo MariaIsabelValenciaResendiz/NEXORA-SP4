@@ -19,6 +19,6 @@ describe('App', () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Producto de ejemplo');
+    expect(compiled.querySelector('h2')?.textContent).toContain('Bolso Nómada');
   });
 });

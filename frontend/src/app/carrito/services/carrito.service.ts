@@ -12,9 +12,9 @@ const SESSION_ROLE_KEY = 'nexora-rol-demo';
 export class CarritoService {
   readonly producto: ProductoDetalle = {
     id: 1,
-    titulo: 'Producto de ejemplo',
-    descripcion: 'Producto de demostración para probar el flujo de agregado al carrito. Se conectará al catálogo cuando esté integrado.',
-    precio: 29.99,
+    titulo: 'Bolso Nómada',
+    descripcion: 'Diseño sobrio con compartimentos amplios y acabados resistentes para uso diario.',
+    precio: 58,
     imagen: '/producto-demo.svg',
   };
 
@@ -22,6 +22,7 @@ export class CarritoService {
   private readonly rolActual = signal<RolUsuario>(this.leerRol());
   readonly carrito = this.articulos.asReadonly();
   readonly cantidadTotal = computed(() => this.articulos().reduce((total, item) => total + item.cantidad, 0));
+  readonly totalCarrito = computed(() => this.articulos().reduce((total, item) => total + item.precio * item.cantidad, 0));
   readonly esCliente = computed(() => this.rolActual() === 'Cliente');
   readonly rol = this.rolActual.asReadonly();
 
