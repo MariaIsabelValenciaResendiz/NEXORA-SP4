@@ -4,6 +4,7 @@ using NEXORA.Application;
 using NEXORA.Application.Interfaces;
 using NEXORA.API.Authentication;
 using NEXORA.Domain;
+using NEXORA.API;
 
 namespace NEXORA.API.Controllers;
 
@@ -45,4 +46,15 @@ public class UsuariosController : ControllerBase
         _usuarioService.Registrar(usuario);
         return CreatedAtAction(nameof(ObtenerPorId), new { id = usuario.Id }, _listarUsuarios.Buscar(usuario.Id));
     }
+
+    [HttpPost("login")]
+    public IActionResult Login([FromBody] LoginRequest request)
+{
+    var usuario = _usuarioService.IniciarSesion(request.Nombre, request.Contrasena);
+
+    if (usuario == null)
+        return Unauthorized(new { mensaje = "Usuario o contraseña inválidos" });
+
+    return Ok(usuario);
+}
 }

@@ -67,4 +67,9 @@ public class UsuarioRepositoryMemoria : IUsuarioRepository, IConsultaUsuarios, I
             _usuarios.Add(usuario);
         }
     }
+
+    public Usuario? ObtenerPorCredenciales(string nombre, string contrasena)
+    {
+        return _usuarios.FirstOrDefault(u => u.Nombre == nombre && u.Contrasena == contrasena);
+    }
 }
