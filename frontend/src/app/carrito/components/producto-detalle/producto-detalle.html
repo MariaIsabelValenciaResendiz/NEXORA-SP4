@@ -8,18 +8,23 @@
   </header>
 
   <main class="screen-content">
-    @if (pantalla() === 'tienda') {
+    @if (pantalla() === 'catalogo') {
+      <app-catalogo (productoSeleccionado)="verDetalle($event)" />
+    } @else if (pantalla() === 'detalle') {
       <section class="detail-screen" aria-labelledby="detail-title">
+        <button class="back-button" type="button" (click)="cambiarPantalla('catalogo')">
+          <span aria-hidden="true">‹</span> Volver al catálogo
+        </button>
         <h1 id="detail-title">Detalle</h1>
         <div class="product-image">
-          <img [src]="carritoService.producto.imagen" [alt]="carritoService.producto.titulo" />
+          <img [src]="carritoService.producto().imagen" [alt]="carritoService.producto().titulo" />
         </div>
         <div class="product-heading">
-          <h2>{{ carritoService.producto.titulo }}</h2>
-          <span class="product-price">{{ carritoService.producto.precio | currency:'USD' }}</span>
+          <h2>{{ carritoService.producto().titulo }}</h2>
+          <span class="product-price">{{ carritoService.producto().precio | currency:'USD' }}</span>
         </div>
-        <span class="category-badge">ACCESORIOS</span>
-        <p class="description">{{ carritoService.producto.descripcion }}</p>
+        <span class="category-badge">{{ carritoService.producto().categoria | uppercase }}</span>
+        <p class="description">{{ carritoService.producto().descripcion }}</p>
 
         <div class="detail-feedback">
           @if (mensaje()) { <p class="success" role="status">{{ mensaje() }}</p> }
@@ -47,7 +52,7 @@
             <span class="empty-count">0</span>
             <h2>Tu carrito está vacío</h2>
             <p>Explora el catálogo y agrega productos.</p>
-            <button class="primary-button explore-button" type="button" (click)="cambiarPantalla('tienda')">Explorar tienda</button>
+            <button class="primary-button explore-button" type="button" (click)="cambiarPantalla('catalogo')">Explorar tienda</button>
           </div>
         } @else {
           <div class="cart-list">
@@ -90,7 +95,7 @@
   </main>
 
   <nav class="bottom-nav" aria-label="Navegación principal">
-    <button type="button" [class.active]="pantalla() === 'tienda'" (click)="cambiarPantalla('tienda')">
+    <button type="button" [class.active]="pantalla() === 'catalogo' || pantalla() === 'detalle'" (click)="cambiarPantalla('catalogo')">
       <span class="nav-icon">H</span><span>Tienda</span>
     </button>
     <button type="button" [class.active]="pantalla() === 'carrito'" (click)="cambiarPantalla('carrito')">

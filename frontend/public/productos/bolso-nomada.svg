@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240" role="img" aria-labelledby="title">
+  <title id="title">Bolso Nómada</title>
+  <rect width="320" height="240" rx="28" fill="#dfecea"/>
+  <path d="M105 94h110l12 104H93z" fill="#ffffff"/>
+  <path d="M128 101V78c0-18 14-32 32-32s32 14 32 32v23" fill="none" stroke="#456f70" stroke-width="13" stroke-linecap="round"/>
+  <path d="M93 118h134" stroke="#c4d9d6" stroke-width="7"/>
+</svg>

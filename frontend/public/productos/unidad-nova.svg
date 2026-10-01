@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240" role="img" aria-labelledby="title">
+  <title id="title">Unidad Nova</title>
+  <rect width="320" height="240" rx="28" fill="#e5ecef"/>
+  <path d="M69 157c41-3 63-23 78-65l40 25c14 9 31 13 48 13h18v43H79c-13 0-20-6-10-16z" fill="#ffffff" stroke="#49646d" stroke-width="7" stroke-linejoin="round"/>
+  <path d="M105 151h126M158 115l-13 21M181 126l-10 17" stroke="#b6cbd0" stroke-width="7" stroke-linecap="round"/>
+</svg>

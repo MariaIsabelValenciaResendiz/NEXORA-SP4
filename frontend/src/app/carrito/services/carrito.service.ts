@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, computed, signal } from '@angular/core';
 import { Observable, tap } from 'rxjs';
+import { Producto } from '../../models/producto.model';
 import { ArticuloCarrito, ProductoDetalle, RolUsuario } from '../models/articulo-carrito.model';
 
 const API_URL = 'http://localhost:5043/api/carrito';
@@ -10,16 +11,18 @@ const SESSION_ROLE_KEY = 'nexora-rol-demo';
 
 @Injectable({ providedIn: 'root' })
 export class CarritoService {
-  readonly producto: ProductoDetalle = {
+  private readonly productoActual = signal<ProductoDetalle>({
     id: 1,
     titulo: 'Bolso Nómada',
     descripcion: 'Diseño sobrio con compartimentos amplios y acabados resistentes para uso diario.',
     precio: 58,
-    imagen: '/producto-demo.svg',
-  };
+    imagen: '/productos/bolso-nomada.svg',
+    categoria: 'Accesorios',
+  });
 
   private readonly articulos = signal<ArticuloCarrito[]>(this.leerCarrito());
   private readonly rolActual = signal<RolUsuario>(this.leerRol());
+  readonly producto = this.productoActual.asReadonly();
   readonly carrito = this.articulos.asReadonly();
   readonly cantidadTotal = computed(() => this.articulos().reduce((total, item) => total + item.cantidad, 0));
   readonly totalCarrito = computed(() => this.articulos().reduce((total, item) => total + item.precio * item.cantidad, 0));
@@ -27,6 +30,17 @@ export class CarritoService {
   readonly rol = this.rolActual.asReadonly();
 
   constructor(private readonly http: HttpClient) {}
+
+  seleccionarProducto(producto: Producto): void {
+    this.productoActual.set({
+      id: producto.id,
+      titulo: producto.titulo,
+      descripcion: producto.descripcion,
+      precio: producto.precio,
+      imagen: producto.imagenUrl,
+      categoria: producto.categoria,
+    });
+  }
 
   agregar(producto: ProductoDetalle, cantidad: number): Observable<ArticuloCarrito> {
     if (!Number.isInteger(cantidad) || cantidad <= 0) {
