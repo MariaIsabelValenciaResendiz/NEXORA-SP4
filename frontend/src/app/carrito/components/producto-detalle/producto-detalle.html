@@ -94,7 +94,7 @@
     }
   </main>
 
-  <nav class="bottom-nav" aria-label="Navegación principal">
+  <nav class="bottom-nav" [class.with-users]="sesionUsuarios.puedeConsultar()" aria-label="Navegación principal">
     <button type="button" [class.active]="pantalla() === 'catalogo' || pantalla() === 'detalle'" (click)="cambiarPantalla('catalogo')">
       <span class="nav-icon">H</span><span>Tienda</span>
     </button>
@@ -104,5 +104,8 @@
     <button type="button" [class.active]="pantalla() === 'cuenta'" (click)="cambiarPantalla('cuenta')">
       <span class="nav-icon">U</span><span>Cuenta</span>
     </button>
+    @if (sesionUsuarios.puedeConsultar()) {
+      <a routerLink="/usuarios"><span class="nav-icon">U</span><span>Usuarios</span></a>
+    }
   </nav>
 </div>

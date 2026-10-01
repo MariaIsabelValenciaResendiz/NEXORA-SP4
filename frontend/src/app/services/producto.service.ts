@@ -2,12 +2,14 @@ import { HttpClient } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { finalize, Observable } from 'rxjs';
 import { NuevoProducto, Producto } from '../models/producto.model';
+import { SesionUsuariosService } from '../usuarios/services/sesion-usuarios.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ProductoService {
   private readonly http = inject(HttpClient);
+  private readonly sesion = inject(SesionUsuariosService);
   private readonly apiUrl = 'http://localhost:5043/api/productos';
   private readonly productosEstado = signal<Producto[]>([]);
   private readonly cargandoEstado = signal(false);
@@ -31,11 +33,18 @@ export class ProductoService {
   cargar(forzar = false): void {
     if (this.cargandoEstado() || (!forzar && this.productosEstado().length > 0)) return;
 
-    this.cargandoEstado.set(true);
     this.errorEstado.set('');
+    const authorization = this.sesion.autorizacion();
+    if (!this.sesion.puedeConsultarCatalogo() || !authorization) {
+      this.productosEstado.set([]);
+      this.errorEstado.set('Tu sesión no tiene permiso para consultar el catálogo.');
+      return;
+    }
+
+    this.cargandoEstado.set(true);
 
     this.http
-      .get<Producto[]>(this.apiUrl)
+      .get<Producto[]>(this.apiUrl, { headers: { Authorization: authorization } })
       .pipe(finalize(() => this.cargandoEstado.set(false)))
       .subscribe({
         next: (productos) => this.productosEstado.set(productos),

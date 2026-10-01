@@ -1,17 +1,21 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+import { RouterTestingHarness } from '@angular/router/testing';
 import { App } from './app';
+import { routes } from './app.routes';
 
 describe('App', () => {
   let httpTesting: HttpTestingController;
 
   beforeEach(async () => {
+    sessionStorage.clear();
+
     await TestBed.configureTestingModule({
       imports: [App],
-      providers: [provideHttpClient(), provideHttpClientTesting()],
-    })
-      .compileComponents();
+      providers: [provideRouter(routes), provideHttpClient(), provideHttpClientTesting()],
+    }).compileComponents();
 
     httpTesting = TestBed.inject(HttpTestingController);
   });
@@ -21,17 +25,22 @@ describe('App', () => {
   it('should create the app', () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
-    httpTesting.expectOne('http://localhost:5043/api/productos').flush([]);
 
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
+    expect(fixture.componentInstance).toBeTruthy();
   });
 
-  it('should render products returned by the NEXORA API', () => {
-    const fixture = TestBed.createComponent(App);
-    fixture.detectChanges();
+  it('should redirect unauthenticated users to login', async () => {
+    const harness = await RouterTestingHarness.create('/producto-detalle');
 
-    httpTesting.expectOne('http://localhost:5043/api/productos').flush([
+    expect(harness.routeNativeElement?.querySelector('.login-form')).toBeTruthy();
+  });
+
+  it('should render products and preserve the product detail flow', async () => {
+    guardarSesionCliente();
+    const harness = await RouterTestingHarness.create('/producto-detalle');
+    const request = httpTesting.expectOne('http://localhost:5043/api/productos');
+    expect(request.request.headers.get('Authorization')).toMatch(/^Basic /);
+    request.flush([
       {
         id: 1,
         titulo: 'Bolso Nómada',
@@ -41,28 +50,40 @@ describe('App', () => {
         categoria: 'Accesorios',
       },
     ]);
-    fixture.detectChanges();
+    harness.detectChanges();
 
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('#catalog-title')?.textContent).toContain('Catálogo');
-    expect(compiled.querySelector('.product-card-title')?.textContent).toContain('Bolso Nómada');
+    expect(harness.routeNativeElement?.querySelector('#catalog-title')?.textContent).toContain('Catálogo');
+    expect(harness.routeNativeElement?.querySelector('.product-card-title')?.textContent).toContain('Bolso Nómada');
+
+    (harness.routeNativeElement?.querySelector('.product-card') as HTMLButtonElement).click();
+    harness.detectChanges();
+    expect(harness.routeNativeElement?.querySelector('#detail-title')?.textContent).toContain('Detalle');
+    expect(harness.routeNativeElement?.querySelector('.product-heading h2')?.textContent).toContain('Bolso Nómada');
   });
 
-  it('should show an error and retry the catalog request', () => {
-    const fixture = TestBed.createComponent(App);
-    fixture.detectChanges();
+  it('should show an error and retry the catalog request', async () => {
+    guardarSesionCliente();
+    const harness = await RouterTestingHarness.create('/producto-detalle');
 
     httpTesting.expectOne('http://localhost:5043/api/productos').flush('Error', {
       status: 503,
       statusText: 'Service Unavailable',
     });
-    fixture.detectChanges();
+    harness.detectChanges();
 
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.error-status')?.textContent).toContain('No pudimos cargar');
+    expect(harness.routeNativeElement?.querySelector('.error-status')?.textContent).toContain('No pudimos cargar');
 
-    (compiled.querySelector('.retry-button') as HTMLButtonElement).click();
-    fixture.detectChanges();
+    (harness.routeNativeElement?.querySelector('.retry-button') as HTMLButtonElement).click();
+    harness.detectChanges();
     httpTesting.expectOne('http://localhost:5043/api/productos').flush([]);
   });
 });
+
+function guardarSesionCliente(): void {
+  sessionStorage.setItem('usuario', JSON.stringify({
+    id: 2,
+    nombre: 'Juan Pérez',
+    contrasena: 'clave456',
+    rol: 'cliente',
+  }));
+}

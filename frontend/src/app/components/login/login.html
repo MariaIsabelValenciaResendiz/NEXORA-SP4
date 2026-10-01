@@ -1,0 +1,54 @@
+<div class="login-container">
+  <div class="login-card">
+
+    <div class="login-header">
+      <span class="badge-rol">VISITANTE</span>
+    </div>
+
+    <div class="logo-section">
+      <div class="logo-circle">N</div>
+      <h1 class="app-title">NEXORA</h1>
+      <p class="app-subtitle">Tu mercado cotidiano</p>
+    </div>
+
+    <form (ngSubmit)="iniciarSesion()" class="login-form">
+
+      <div class="campo">
+        <label for="nombre">USUARIO</label>
+        <input
+          id="nombre"
+          type="text"
+          [(ngModel)]="nombre"
+          name="nombre"
+          [class.error]="errorNombre"
+          autocomplete="username"
+        />
+        <span class="error-texto" *ngIf="errorNombre">{{ errorNombre }}</span>
+      </div>
+
+      <div class="campo">
+        <label for="contrasena">CONTRASEÑA</label>
+        <input
+          id="contrasena"
+          type="password"
+          [(ngModel)]="contrasena"
+          name="contrasena"
+          [class.error]="errorContrasena"
+          autocomplete="current-password"
+        />
+        <span class="error-texto" *ngIf="errorContrasena">{{ errorContrasena }}</span>
+      </div>
+
+      <div class="banner-error" *ngIf="mensajeGeneral">
+        <span class="icono">!</span>
+        <span>{{ mensajeGeneral }}</span>
+      </div>
+
+      <button type="submit" class="boton-login" [disabled]="cargando">
+        {{ cargando ? 'Ingresando...' : 'Iniciar sesión' }}
+      </button>
+
+    </form>
+
+  </div>
+</div>

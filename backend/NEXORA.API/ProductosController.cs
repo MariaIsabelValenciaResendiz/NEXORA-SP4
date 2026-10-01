@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NEXORA.API.Authentication;
 using NEXORA.Application;
 using NEXORA.Application.UseCases;
 using NEXORA.Domain;
@@ -19,6 +21,9 @@ public class ProductosController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(
+        AuthenticationSchemes = UsuariosBasicHandler.NombreEsquema,
+        Roles = "admin,cliente,auditor")]
     public ActionResult<IReadOnlyList<Producto>> ObtenerTodos()
     {
         return Ok(_listarProductos.Ejecutar());

@@ -5,16 +5,19 @@ import { CatalogoComponent } from '../../../catalogo/components/catalogo/catalog
 import { Producto } from '../../../models/producto.model';
 import { CarritoService } from '../../services/carrito.service';
 import { RolUsuario } from '../../models/articulo-carrito.model';
+import { RouterLink } from '@angular/router';
+import { SesionUsuariosService } from '../../../usuarios/services/sesion-usuarios.service';
 
 type Pantalla = 'catalogo' | 'detalle' | 'carrito' | 'cuenta';
 
 @Component({
   selector: 'app-producto-detalle',
-  imports: [CatalogoComponent, CurrencyPipe, FormsModule, UpperCasePipe],
+  imports: [CatalogoComponent, CurrencyPipe, FormsModule, RouterLink, UpperCasePipe],
   templateUrl: './producto-detalle.html',
 })
 export class ProductoDetalleComponent {
   protected readonly carritoService = inject(CarritoService);
+  protected readonly sesionUsuarios = inject(SesionUsuariosService);
   protected readonly pantalla = signal<Pantalla>('catalogo');
   protected readonly cantidad = signal(1);
   protected readonly mensaje = signal('');
