@@ -2,6 +2,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<NEXORA.Application.IUsuarioRepository, NEXORA.Infrastructure.UsuarioRepositoryMemoria>();
 builder.Services.AddScoped<NEXORA.Application.UsuarioService>();
+builder.Services.AddScoped<NEXORA.Application.IProductoRepository, NEXORA.Infrastructure.ProductoRepositoryMemoria>();
+builder.Services.AddScoped<NEXORA.Application.ProductoService>();
 
 builder.Services.AddCors(options =>
 {
