@@ -1,32 +1,24 @@
+using NEXORA.Application.Interfaces;
+using NEXORA.Application.UseCases;
+using NEXORA.Infrastructure.Repositories;
+
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddScoped<NEXORA.Application.IUsuarioRepository, NEXORA.Infrastructure.UsuarioRepositoryMemoria>();
-builder.Services.AddScoped<NEXORA.Application.UsuarioService>();
-
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("PermitirAngular", policy =>
-        policy.WithOrigins("http://localhost:4200")
-              .AllowAnyMethod()
-              .AllowAnyHeader());
-});
-
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
 builder.Services.AddControllers();
+builder.Services.AddOpenApi();
+builder.Services.AddCors(options => options.AddPolicy("Angular", policy =>
+    policy.WithOrigins("http://localhost:4200")
+        .AllowAnyHeader()
+        .AllowAnyMethod()));
+
+builder.Services.AddSingleton<IRepositorioCarrito, RepositorioCarritoMemoria>();
+builder.Services.AddScoped<AgregarArticuloAlCarrito>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
+if (app.Environment.IsDevelopment()) app.MapOpenApi();
 
 app.UseHttpsRedirection();
-
-app.UseCors("PermitirAngular");
+app.UseCors("Angular");
 app.MapControllers();
-
 app.Run();
