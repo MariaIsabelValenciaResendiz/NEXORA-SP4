@@ -1,22 +1,22 @@
-import { CurrencyPipe } from '@angular/common';
+import { CurrencyPipe, UpperCasePipe } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { CatalogoComponent } from '../../../catalogo/components/catalogo/catalogo';
+import { Producto } from '../../../models/producto.model';
 import { CarritoService } from '../../services/carrito.service';
-import { RolUsuario } from '../../models/articulo-carrito.model';
 import { RouterLink } from '@angular/router';
 import { SesionUsuariosService } from '../../../usuarios/services/sesion-usuarios.service';
 
-type Pantalla = 'tienda' | 'carrito' | 'cuenta';
+type Pantalla = 'catalogo' | 'detalle' | 'carrito' | 'cuenta';
 
 @Component({
   selector: 'app-producto-detalle',
-  imports: [CurrencyPipe, FormsModule, RouterLink],
+  imports: [CatalogoComponent, CurrencyPipe, RouterLink, UpperCasePipe],
   templateUrl: './producto-detalle.html',
 })
 export class ProductoDetalleComponent {
   protected readonly carritoService = inject(CarritoService);
   protected readonly sesionUsuarios = inject(SesionUsuariosService);
-  protected readonly pantalla = signal<Pantalla>('tienda');
+  protected readonly pantalla = signal<Pantalla>('catalogo');
   protected readonly cantidad = signal(1);
   protected readonly mensaje = signal('');
   protected readonly error = signal('');
@@ -28,9 +28,9 @@ export class ProductoDetalleComponent {
     this.error.set('');
   }
 
-  protected actualizarRol(event: Event): void {
-    const rol = (event.target as HTMLSelectElement).value as RolUsuario;
-    this.carritoService.cambiarRol(rol);
+  protected verDetalle(producto: Producto): void {
+    this.carritoService.seleccionarProducto(producto);
+    this.cambiarPantalla('detalle');
   }
 
   protected cambiarCantidad(delta: number): void {
@@ -43,7 +43,7 @@ export class ProductoDetalleComponent {
     this.cargando.set(true);
 
     try {
-      this.carritoService.agregar(this.carritoService.producto, this.cantidad()).subscribe({
+      this.carritoService.agregar(this.carritoService.producto(), this.cantidad()).subscribe({
         next: (articulo) => {
           this.mensaje.set(`OK  Producto añadido. Cantidad: ${articulo.cantidad}`);
           this.cargando.set(false);

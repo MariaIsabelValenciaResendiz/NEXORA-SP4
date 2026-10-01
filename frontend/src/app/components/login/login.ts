@@ -50,14 +50,15 @@ export class Login {
 
     this.authService.login(this.nombre, this.contrasena).subscribe({
       next: (usuario) => {
-  this.cargando = false;
+        this.cargando = false;
+        const rol = usuario.rol.trim().toLowerCase();
 
-  if (usuario.rol === 'Cliente') {
-    this.router.navigate(['/producto-detalle']);
-  } else {
-    this.mensajeGeneral = `Inicio de sesión correcto. Rol: ${usuario.rol}`;
-  }
-},
+        if (['admin', 'administrador', 'cliente', 'auditor'].includes(rol)) {
+          this.router.navigate(['/producto-detalle']);
+        } else {
+          this.mensajeGeneral = `Inicio de sesión correcto. Rol sin acceso al catálogo: ${usuario.rol}`;
+        }
+      },
       error: (err) => {
         this.cargando = false;
         if (err.status === 401) {

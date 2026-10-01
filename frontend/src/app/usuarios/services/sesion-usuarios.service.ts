@@ -26,6 +26,10 @@ export class SesionUsuariosService {
     return ['admin', 'administrador', 'auditor'].includes(this.rol());
   }
 
+  puedeConsultarCatalogo(): boolean {
+    return ['admin', 'administrador', 'cliente', 'auditor'].includes(this.rol());
+  }
+
   autorizacion(): string | null {
     const sesion = this.obtener();
     if (!sesion) return null;

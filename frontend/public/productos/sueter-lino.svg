@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240" role="img" aria-labelledby="title">
+  <title id="title">Suéter Lino</title>
+  <rect width="320" height="240" rx="28" fill="#e4eee7"/>
+  <path d="M108 73l28-18c13 13 35 13 48 0l28 18 43 47-31 29-19-19v70H115v-70l-19 19-31-29z" fill="#ffffff" stroke="#668779" stroke-width="7" stroke-linejoin="round"/>
+  <path d="M137 61c3 19 43 19 46 0" fill="none" stroke="#c2d5cc" stroke-width="8"/>
+</svg>

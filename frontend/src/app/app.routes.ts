@@ -1,30 +1,21 @@
 import { Routes } from '@angular/router';
-
+import { ProductoDetalleComponent } from './carrito/components/producto-detalle/producto-detalle';
+import { catalogoGuard } from './catalogo/guards/catalogo.guard';
 import { Login } from './components/login/login';
 import { ProductoCrear } from './components/producto-crear/producto-crear';
-import { ProductoDetalleComponent } from './carrito/components/producto-detalle/producto-detalle';
-import {
-  usuariosGuard,
-  usuariosMatchGuard
-} from './usuarios/guards/usuarios.guard';
+import { usuariosGuard, usuariosMatchGuard } from './usuarios/guards/usuarios.guard';
 
 export const routes: Routes = [
-  {
-    path: '',
-    pathMatch: 'full',
-    component: Login
-  },
-  {
-    path: 'login',
-    component: Login
-  },
+  { path: '', pathMatch: 'full', component: Login },
+  { path: 'login', component: Login },
   {
     path: 'producto-detalle',
-    component: ProductoDetalleComponent
+    component: ProductoDetalleComponent,
+    canActivate: [catalogoGuard],
   },
   {
     path: 'productos/nuevo',
-    component: ProductoCrear
+    component: ProductoCrear,
   },
   {
     path: 'usuarios',

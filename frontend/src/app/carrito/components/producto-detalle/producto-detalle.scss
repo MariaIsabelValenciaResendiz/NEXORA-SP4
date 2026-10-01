@@ -47,6 +47,18 @@ body {
 .screen-content { display: flex; flex: 1; flex-direction: column; padding: 12px 20px 18px; }
 h1 { margin: 0 0 12px; color: #293c41; font-size: 1.35rem; font-weight: 700; }
 .detail-screen, .cart-screen, .account-screen { display: flex; flex: 1; flex-direction: column; }
+.back-button {
+  align-self: flex-start;
+  margin: -4px 0 8px;
+  padding: 4px 0;
+  border: 0;
+  background: transparent;
+  color: #4b817d;
+  font: inherit;
+  font-size: .72rem;
+  font-weight: 700;
+  cursor: pointer;
+}
 .product-image {
   display: grid;
   min-height: 185px;

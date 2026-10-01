@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240" role="img" aria-labelledby="title">
+  <title id="title">Aro Alba</title>
+  <rect width="320" height="240" rx="28" fill="#f0e8d9"/>
+  <circle cx="160" cy="125" r="66" fill="none" stroke="#bf9c62" stroke-width="17"/>
+  <circle cx="160" cy="125" r="36" fill="#ffffff"/>
+  <path d="M160 58v18" stroke="#f5dba6" stroke-width="9" stroke-linecap="round"/>
+</svg>

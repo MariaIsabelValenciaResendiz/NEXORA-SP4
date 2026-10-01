@@ -12,6 +12,7 @@ export interface ProductoDetalle {
   descripcion: string;
   precio: number;
   imagen: string;
+  categoria: string;
 }
 
-export type RolUsuario = 'Cliente' | 'Auditor';
+export type RolUsuario = 'Administrador' | 'Cliente' | 'Auditor';

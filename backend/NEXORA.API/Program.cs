@@ -20,18 +20,20 @@ builder.Services.AddSingleton<IAccesoUsuarios>(services =>
 builder.Services.AddScoped<NEXORA.Application.UsuarioService>();
 builder.Services.AddScoped<IListarUsuarios, ListarUsuarios>();
 
-builder.Services.AddScoped<
-    NEXORA.Application.IProductoRepository,
-    NEXORA.Infrastructure.ProductoRepositoryMemoria>();
-
-builder.Services.AddScoped<NEXORA.Application.ProductoService>();
-
 builder.Services.AddAuthentication()
     .AddScheme<AuthenticationSchemeOptions, UsuariosBasicHandler>(
         UsuariosBasicHandler.NombreEsquema,
         _ => { });
 
 builder.Services.AddAuthorization();
+
+builder.Services.AddSingleton<NEXORA.Infrastructure.ProductoRepositoryMemoria>();
+builder.Services.AddSingleton<NEXORA.Application.IProductoRepository>(services =>
+    services.GetRequiredService<NEXORA.Infrastructure.ProductoRepositoryMemoria>());
+builder.Services.AddSingleton<IConsultaProductos>(services =>
+    services.GetRequiredService<NEXORA.Infrastructure.ProductoRepositoryMemoria>());
+builder.Services.AddScoped<NEXORA.Application.ProductoService>();
+builder.Services.AddScoped<ListarProductos>();
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
