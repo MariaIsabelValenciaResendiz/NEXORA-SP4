@@ -2,12 +2,12 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, computed, signal } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 import { Producto } from '../../models/producto.model';
+import { SesionUsuariosService } from '../../usuarios/services/sesion-usuarios.service';
 import { ArticuloCarrito, ProductoDetalle, RolUsuario } from '../models/articulo-carrito.model';
 
 const API_URL = 'http://localhost:5043/api/carrito';
 const CLIENTE_ID = 'cliente-demo';
 const SESSION_CART_KEY = 'nexora-carrito';
-const SESSION_ROLE_KEY = 'nexora-rol-demo';
 
 @Injectable({ providedIn: 'root' })
 export class CarritoService {
@@ -21,15 +21,17 @@ export class CarritoService {
   });
 
   private readonly articulos = signal<ArticuloCarrito[]>(this.leerCarrito());
-  private readonly rolActual = signal<RolUsuario>(this.leerRol());
   readonly producto = this.productoActual.asReadonly();
   readonly carrito = this.articulos.asReadonly();
   readonly cantidadTotal = computed(() => this.articulos().reduce((total, item) => total + item.cantidad, 0));
   readonly totalCarrito = computed(() => this.articulos().reduce((total, item) => total + item.precio * item.cantidad, 0));
-  readonly esCliente = computed(() => this.rolActual() === 'Cliente');
-  readonly rol = this.rolActual.asReadonly();
+  readonly esCliente = (): boolean => this.sesion.rol() === 'cliente';
+  readonly rol = (): RolUsuario => this.leerRol();
 
-  constructor(private readonly http: HttpClient) {}
+  constructor(
+    private readonly http: HttpClient,
+    private readonly sesion: SesionUsuariosService,
+  ) {}
 
   seleccionarProducto(producto: Producto): void {
     this.productoActual.set({
@@ -43,6 +45,10 @@ export class CarritoService {
   }
 
   agregar(producto: ProductoDetalle, cantidad: number): Observable<ArticuloCarrito> {
+    if (!this.esCliente()) {
+      throw new Error('Solo los clientes pueden añadir productos al carrito.');
+    }
+
     if (!Number.isInteger(cantidad) || cantidad <= 0) {
       throw new Error('La cantidad debe ser un número entero mayor que cero.');
     }
@@ -54,11 +60,6 @@ export class CarritoService {
       imagen: producto.imagen,
       cantidad,
     }).pipe(tap((articulo) => this.actualizarEstado(articulo)));
-  }
-
-  cambiarRol(rol: RolUsuario): void {
-    this.rolActual.set(rol);
-    sessionStorage.setItem(SESSION_ROLE_KEY, rol);
   }
 
   private actualizarEstado(articulo: ArticuloCarrito): void {
@@ -77,6 +78,10 @@ export class CarritoService {
   }
 
   private leerRol(): RolUsuario {
-    return sessionStorage.getItem(SESSION_ROLE_KEY) === 'Auditor' ? 'Auditor' : 'Cliente';
+    const rol = this.sesion.rol();
+
+    if (rol === 'admin' || rol === 'administrador') return 'Administrador';
+    if (rol === 'auditor') return 'Auditor';
+    return 'Cliente';
   }
 }

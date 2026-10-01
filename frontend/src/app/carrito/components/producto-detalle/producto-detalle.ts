@@ -1,10 +1,8 @@
 import { CurrencyPipe, UpperCasePipe } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { CatalogoComponent } from '../../../catalogo/components/catalogo/catalogo';
 import { Producto } from '../../../models/producto.model';
 import { CarritoService } from '../../services/carrito.service';
-import { RolUsuario } from '../../models/articulo-carrito.model';
 import { RouterLink } from '@angular/router';
 import { SesionUsuariosService } from '../../../usuarios/services/sesion-usuarios.service';
 
@@ -12,7 +10,7 @@ type Pantalla = 'catalogo' | 'detalle' | 'carrito' | 'cuenta';
 
 @Component({
   selector: 'app-producto-detalle',
-  imports: [CatalogoComponent, CurrencyPipe, FormsModule, RouterLink, UpperCasePipe],
+  imports: [CatalogoComponent, CurrencyPipe, RouterLink, UpperCasePipe],
   templateUrl: './producto-detalle.html',
 })
 export class ProductoDetalleComponent {
@@ -33,11 +31,6 @@ export class ProductoDetalleComponent {
   protected verDetalle(producto: Producto): void {
     this.carritoService.seleccionarProducto(producto);
     this.cambiarPantalla('detalle');
-  }
-
-  protected actualizarRol(event: Event): void {
-    const rol = (event.target as HTMLSelectElement).value as RolUsuario;
-    this.carritoService.cambiarRol(rol);
   }
 
   protected cambiarCantidad(delta: number): void {

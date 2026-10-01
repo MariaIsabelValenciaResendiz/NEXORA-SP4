@@ -15,4 +15,4 @@ export interface ProductoDetalle {
   categoria: string;
 }
 
-export type RolUsuario = 'Cliente' | 'Auditor';
+export type RolUsuario = 'Administrador' | 'Cliente' | 'Auditor';

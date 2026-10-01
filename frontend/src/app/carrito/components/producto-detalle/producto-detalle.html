@@ -79,17 +79,14 @@
         <h1 id="account-title">Mi cuenta</h1>
         <div class="profile-heading">
           <span class="avatar">CD</span>
-          <h2>Cliente Demo</h2>
-          <p>cliente.demo&#64;nexora.mx</p>
+          <h2>{{ sesionUsuarios.obtener()?.nombre }}</h2>
+          <p>Usuario autenticado</p>
         </div>
         <div class="account-row"><span>Perfil</span><strong>{{ carritoService.rol() }}</strong></div>
-        <div class="account-row"><span>Carrito local</span><strong>{{ carritoService.cantidadTotal() }} productos</strong></div>
+        @if (carritoService.esCliente()) {
+          <div class="account-row"><span>Carrito local</span><strong>{{ carritoService.cantidadTotal() }} productos</strong></div>
+        }
         <div class="account-row"><span>Sesión</span><strong>Activa</strong></div>
-        <label class="demo-role-label" for="role">Cambiar rol de demostración</label>
-        <select id="role" [value]="carritoService.rol()" (change)="actualizarRol($event)">
-          <option value="Cliente">Cliente</option>
-          <option value="Auditor">Auditor</option>
-        </select>
       </section>
     }
   </main>
@@ -98,9 +95,11 @@
     <button type="button" [class.active]="pantalla() === 'catalogo' || pantalla() === 'detalle'" (click)="cambiarPantalla('catalogo')">
       <span class="nav-icon">H</span><span>Tienda</span>
     </button>
-    <button type="button" [class.active]="pantalla() === 'carrito'" (click)="cambiarPantalla('carrito')">
-      <span class="nav-icon">C</span><span>Carrito@if (carritoService.cantidadTotal() > 0) { <small>{{ carritoService.cantidadTotal() }}</small> }</span>
-    </button>
+    @if (carritoService.esCliente()) {
+      <button type="button" [class.active]="pantalla() === 'carrito'" (click)="cambiarPantalla('carrito')">
+        <span class="nav-icon">C</span><span>Carrito@if (carritoService.cantidadTotal() > 0) { <small>{{ carritoService.cantidadTotal() }}</small> }</span>
+      </button>
+    }
     <button type="button" [class.active]="pantalla() === 'cuenta'" (click)="cambiarPantalla('cuenta')">
       <span class="nav-icon">U</span><span>Cuenta</span>
     </button>

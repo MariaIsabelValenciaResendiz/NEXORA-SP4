@@ -77,13 +77,41 @@ describe('App', () => {
     harness.detectChanges();
     httpTesting.expectOne('http://localhost:5043/api/productos').flush([]);
   });
+
+  it('should use the authenticated administrator role and hide purchase controls', async () => {
+    guardarSesion('admin');
+    const harness = await RouterTestingHarness.create('/producto-detalle');
+
+    httpTesting.expectOne('http://localhost:5043/api/productos').flush([
+      {
+        id: 1,
+        titulo: 'Bolso Nómada',
+        precio: 58,
+        descripcion: 'Diseño sobrio y resistente.',
+        imagenUrl: '/productos/bolso-nomada.svg',
+        categoria: 'Accesorios',
+      },
+    ]);
+    harness.detectChanges();
+
+    (harness.routeNativeElement?.querySelector('.product-card') as HTMLButtonElement).click();
+    harness.detectChanges();
+
+    expect(harness.routeNativeElement?.querySelector('.role-badge')?.textContent).toContain('Administrador');
+    expect(harness.routeNativeElement?.querySelector('.purchase-actions')).toBeNull();
+    expect(harness.routeNativeElement?.querySelector('.bottom-nav')?.textContent).not.toContain('Carrito');
+  });
 });
 
 function guardarSesionCliente(): void {
+  guardarSesion('cliente');
+}
+
+function guardarSesion(rol: string): void {
   sessionStorage.setItem('usuario', JSON.stringify({
     id: 2,
     nombre: 'Juan Pérez',
     contrasena: 'clave456',
-    rol: 'cliente',
+    rol,
   }));
 }
