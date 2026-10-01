@@ -1,0 +1,30 @@
+@host = http://localhost:5043
+
+### Administrador: 200, arreglo de usuarios SIN contrasena
+GET {{host}}/users
+Authorization: Basic maria.admin:clave123
+Accept: application/json
+
+### Auditor: 200
+GET {{host}}/users
+Authorization: Basic laura.m:auditor123
+Accept: application/json
+
+### Cliente: 403
+GET {{host}}/users
+Authorization: Basic juan.p:clave456
+
+### Sin credenciales: 401
+GET {{host}}/users
+
+### Contraseña incorrecta: 401
+GET {{host}}/users
+Authorization: Basic maria.admin:incorrecta
+
+### Ruta previa protegida: mismo resultado que /users
+GET {{host}}/api/usuarios
+Authorization: Basic laura.m:auditor123
+
+### Usuario inexistente: 404
+GET {{host}}/api/usuarios/9999
+Authorization: Basic laura.m:auditor123

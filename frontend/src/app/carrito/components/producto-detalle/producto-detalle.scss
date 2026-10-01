@@ -92,6 +92,8 @@ h1 { margin: 0 0 12px; color: #293c41; font-size: 1.35rem; font-weight: 700; }
 }
 .bottom-nav button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; border: 0; background: transparent; color: #6c7b7e; font-size: .68rem; cursor: pointer; }
 .bottom-nav button.active { color: #4b817d; }
+.bottom-nav.with-users { grid-template-columns: repeat(4, 1fr); }
+.bottom-nav > a { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: #6c7b7e; font-size: .68rem; text-decoration: none; }
 .nav-icon { font-size: .78rem; font-weight: 700; }
 .bottom-nav small { display: inline-grid; min-width: 15px; height: 15px; margin-left: 3px; place-items: center; border-radius: 50%; background: #4b817d; color: #fff; font-size: .58rem; }
 .cart-screen h1, .account-screen h1 { margin-bottom: 18px; }

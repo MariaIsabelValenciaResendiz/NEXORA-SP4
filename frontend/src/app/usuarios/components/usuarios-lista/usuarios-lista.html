@@ -1,0 +1,59 @@
+<div class="app-shell">
+  <header class="topbar">
+    <div class="brand-lockup" aria-label="NEXORA">
+      <span class="brand-mark">N</span><span class="brand-name">NEXORA</span>
+    </div>
+    <span class="role-badge">{{ sesion.rol() }}</span>
+  </header>
+
+  <main class="screen-content" [attr.aria-busy]="vm.cargando()">
+    <h1>Usuarios</h1>
+    @if (vm.cargando()) {
+      <div class="users-feedback" role="status" aria-live="polite">
+        <span class="spinner" aria-hidden="true"></span>
+        <p>Cargando usuarios…</p>
+      </div>
+    } @else if (vm.error()) {
+      <div class="users-feedback" role="alert">
+        <span class="error-mark" aria-hidden="true">!</span>
+        <h2>No pudimos cargar usuarios</h2>
+        <p>{{ vm.error() }}</p>
+        <button class="primary-button retry-button" type="button" (click)="vm.cargar()">Reintentar</button>
+      </div>
+    } @else if (vm.usuarios().length === 0) {
+      <div class="users-feedback" role="status"><h2>No hay usuarios registrados</h2></div>
+    } @else {
+      <div class="users-list">
+        @for (usuario of vm.usuarios(); track $index) {
+          <article class="user-card">
+            <span class="user-avatar" aria-hidden="true">{{ usuario.iniciales }}</span>
+            <div class="user-info">
+              <h2>{{ usuario.nombre }}</h2>
+              <p class="username">&#64;{{ usuario.nombreUsuario || 'Sin usuario' }}</p>
+              <div class="user-contact">
+                @if (usuario.correo) {
+                  <a [href]="'mailto:' + usuario.correo">{{ usuario.correo }}</a>
+                } @else { <span>Sin correo</span> }
+                @if (usuario.telefono) {
+                  <a [href]="usuario.enlaceTelefono">{{ usuario.telefono }}</a>
+                } @else { <span>Sin teléfono</span> }
+              </div>
+              <details>
+                <summary>Ver dirección</summary>
+                @if (usuario.direccion.ciudad || usuario.direccion.calle) {
+                  <p>{{ usuario.direccion.calle }} {{ usuario.direccion.numero || '' }}</p>
+                  <p>{{ usuario.direccion.ciudad }} {{ usuario.direccion.codigoPostal }}</p>
+                } @else { <p>Sin dirección registrada</p> }
+              </details>
+            </div>
+          </article>
+        }
+      </div>
+    }
+  </main>
+
+  <nav class="bottom-nav users-nav" aria-label="Navegación de usuarios">
+    <a routerLink="/"><span class="nav-icon">H</span><span>Tienda</span></a>
+    <a routerLink="/usuarios" class="active" aria-current="page"><span class="nav-icon">U</span><span>Usuarios</span></a>
+  </nav>
+</div>
