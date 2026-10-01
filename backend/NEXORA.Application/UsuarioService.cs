@@ -25,4 +25,9 @@ public class UsuarioService
     {
         _usuarioRepository.Agregar(usuario);
     }
+
+    public Usuario? IniciarSesion(string nombre, string contrasena)
+    {
+        return _usuarioRepository.ObtenerPorCredenciales(nombre, contrasena);
+    }
 }

@@ -28,4 +28,9 @@ public class UsuarioRepositoryMemoria : IUsuarioRepository
         usuario.Id = _usuarios.Count > 0 ? _usuarios.Max(u => u.Id) + 1 : 1;
         _usuarios.Add(usuario);
     }
+
+    public Usuario? ObtenerPorCredenciales(string nombre, string contrasena)
+    {
+        return _usuarios.FirstOrDefault(u => u.Nombre == nombre && u.Contrasena == contrasena);
+    }
 }
