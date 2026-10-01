@@ -49,10 +49,15 @@ export class Login {
     this.cargando = true;
 
     this.authService.login(this.nombre, this.contrasena).subscribe({
-      next: () => {
-        this.cargando = false;
-        this.router.navigate(['/']);
-      },
+      next: (usuario) => {
+  this.cargando = false;
+
+  if (usuario.rol === 'Cliente') {
+    this.router.navigate(['/producto-detalle']);
+  } else {
+    this.mensajeGeneral = `Inicio de sesión correcto. Rol: ${usuario.rol}`;
+  }
+},
       error: (err) => {
         this.cargando = false;
         if (err.status === 401) {
