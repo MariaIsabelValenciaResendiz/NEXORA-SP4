@@ -1,0 +1,83 @@
+.contenedor {
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.tarjeta {
+  width: 100%;
+  max-width: 550px;
+  padding: 30px;
+  border: 1px solid #dcdcdc;
+  border-radius: 12px;
+  background: white;
+}
+
+h1 {
+  margin-top: 0;
+}
+
+.subtitulo {
+  margin-bottom: 25px;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 18px;
+}
+
+label {
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+input,
+textarea {
+  padding: 10px;
+  border: 1px solid #bdbdbd;
+  border-radius: 6px;
+  font-size: 16px;
+}
+
+textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.invalido {
+  border: 2px solid #d32f2f;
+}
+
+.texto-error {
+  margin-top: 5px;
+  color: #d32f2f;
+  font-size: 13px;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.mensaje {
+  padding: 12px;
+  margin-bottom: 20px;
+  border-radius: 6px;
+}
+
+.exito {
+  border: 1px solid #2e7d32;
+}
+
+.error {
+  border: 1px solid #d32f2f;
+}

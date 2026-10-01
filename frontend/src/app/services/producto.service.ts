@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Producto } from '../models/producto.model';
+import { NuevoProducto, Producto } from '../models/producto.model';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +11,7 @@ export class ProductoService {
 
   constructor(private http: HttpClient) {}
 
-  registrar(producto: Producto): Observable<Producto> {
+  registrar(producto: NuevoProducto): Observable<Producto> {
     return this.http.post<Producto>(this.apiUrl, producto);
   }
 }
