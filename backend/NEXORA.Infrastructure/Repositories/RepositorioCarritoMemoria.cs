@@ -34,4 +34,31 @@ public sealed class RepositorioCarritoMemoria : IRepositorioCarrito
         var candado = _candados.GetOrAdd(clienteId, _ => new object());
         lock (candado) return carrito.ToArray();
     }
+
+    public bool ActualizarCantidad(string clienteId, int productoId, int cantidad)
+    {
+        if (!_carritos.TryGetValue(clienteId, out var carrito)) return false;
+        var candado = _candados.GetOrAdd(clienteId, _ => new object());
+
+        lock (candado)
+        {
+            var articulo = carrito.FirstOrDefault(item => item.ProductoId == productoId);
+            if (articulo is null) return false;
+
+            articulo.CambiarCantidad(cantidad);
+            return true;
+        }
+    }
+
+    public bool EliminarArticulo(string clienteId, int productoId)
+    {
+        if (!_carritos.TryGetValue(clienteId, out var carrito)) return false;
+        var candado = _candados.GetOrAdd(clienteId, _ => new object());
+
+        lock (candado)
+        {
+            var articulo = carrito.FirstOrDefault(item => item.ProductoId == productoId);
+            return articulo is not null && carrito.Remove(articulo);
+        }
+    }
 }
