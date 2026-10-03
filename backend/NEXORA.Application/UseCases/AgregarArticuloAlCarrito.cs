@@ -1,10 +1,11 @@
-using NEXORA.Application.Interfaces;
 using NEXORA.Domain.Entities;
+using NEXORA.Application.Interfaces;
 
 namespace NEXORA.Application.UseCases;
 
 public sealed class AgregarArticuloAlCarrito(
     IRepositorioCarrito repositorio)
+    : IAgregarArticuloAlCarrito
 {
     public ArticuloCarrito Ejecutar(
         string clienteId,

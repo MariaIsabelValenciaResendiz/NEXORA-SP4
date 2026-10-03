@@ -27,4 +27,10 @@ public sealed class ArticuloCarrito
         if (cantidad <= 0) throw new ArgumentOutOfRangeException(nameof(cantidad));
         Cantidad += cantidad;
     }
+
+    public void CambiarCantidad(int cantidad)
+    {
+        if (cantidad <= 0) throw new ArgumentOutOfRangeException(nameof(cantidad));
+        Cantidad = cantidad;
+    }
 }

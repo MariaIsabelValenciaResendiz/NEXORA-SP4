@@ -47,31 +47,57 @@
     } @else if (pantalla() === 'carrito') {
       <section class="cart-screen" aria-labelledby="cart-title">
         <h1 id="cart-title">Mi carrito</h1>
-        @if (carritoService.carrito().length === 0) {
+        @if (errorCargaCarrito()) {
+          <div class="cart-request-error" role="alert">
+            <p>{{ errorCargaCarrito() }}</p>
+            <button class="secondary-button" type="button" (click)="reintentarCargarCarrito()">Reintentar</button>
+          </div>
+        } @else if (cargandoCarrito()) {
+          <p class="cart-loading" role="status">Cargando tu carrito…</p>
+        } @else if (carritoService.carrito().length === 0) {
           <div class="empty-cart">
             <span class="empty-count">0</span>
             <h2>Tu carrito está vacío</h2>
-            <p>Explora el catálogo y agrega productos.</p>
+            <p>Tu carrito está vacío, explora el catálogo</p>
             <button class="primary-button explore-button" type="button" (click)="cambiarPantalla('catalogo')">Explorar tienda</button>
+            <button class="primary-button checkout-button" type="button" disabled>Proceder al pago</button>
           </div>
         } @else {
+          @if (errorCarrito()) { <p class="error cart-mutation-error" role="alert">{{ errorCarrito() }}</p> }
           <div class="cart-list">
             @for (item of carritoService.carrito(); track item.productoId) {
               <article class="cart-item">
                 <img [src]="item.imagen" [alt]="item.titulo" />
                 <div class="cart-item-info">
                   <h2>{{ item.titulo }}</h2>
-                  <p>{{ item.precio | currency:'USD' }}</p>
-                  <span class="item-quantity">Cantidad: {{ item.cantidad }}</span>
+                  <p>{{ item.precio | currency:'USD':'symbol':'1.2-2' }}</p>
+                  <span class="item-quantity">Subtotal: {{ (item.precio * item.cantidad) | currency:'USD':'symbol':'1.2-2' }}</span>
+                  <div class="cart-item-actions">
+                    <div class="quantity-stepper" [attr.aria-label]="'Cantidad de ' + item.titulo">
+                      <button class="item-decrease" type="button" [attr.aria-label]="'Disminuir ' + item.titulo"
+                        [disabled]="productoEnOperacion() !== null"
+                        (click)="cambiarCantidadArticulo(item.productoId, item.cantidad, -1)">−</button>
+                      <span aria-live="polite">{{ item.cantidad }}</span>
+                      <button class="item-increase" type="button" [attr.aria-label]="'Aumentar ' + item.titulo"
+                        [disabled]="productoEnOperacion() !== null"
+                        (click)="cambiarCantidadArticulo(item.productoId, item.cantidad, 1)">+</button>
+                    </div>
+                    <button class="item-remove" type="button"
+                      [disabled]="productoEnOperacion() !== null"
+                      (click)="eliminarArticulo(item.productoId)">Eliminar</button>
+                  </div>
                 </div>
               </article>
             }
           </div>
           <div class="cart-total">
             <span>Total</span>
-            <strong>{{ carritoService.totalCarrito() | currency:'USD' }}</strong>
+            <strong>{{ carritoService.totalCarrito() | currency:'USD':'symbol':'1.2-2' }}</strong>
           </div>
-          <button class="primary-button checkout-button" type="button" disabled>Proceder al pago</button>
+          <button class="primary-button checkout-button" type="button"
+            [disabled]="carritoService.carrito().length === 0 || cargandoCarrito() || productoEnOperacion() !== null">
+            Proceder al pago
+          </button>
         }
       </section>
     } @else {

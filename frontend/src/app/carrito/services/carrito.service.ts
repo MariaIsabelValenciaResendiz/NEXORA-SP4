@@ -1,12 +1,11 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, computed, signal } from '@angular/core';
-import { Observable, tap } from 'rxjs';
+import { Observable, catchError, tap, throwError } from 'rxjs';
 import { Producto } from '../../models/producto.model';
 import { SesionUsuariosService } from '../../usuarios/services/sesion-usuarios.service';
 import { ArticuloCarrito, ProductoDetalle, RolUsuario } from '../models/articulo-carrito.model';
 
 const API_URL = 'http://localhost:5043/api/carrito';
-const CLIENTE_ID = 'cliente-demo';
 const SESSION_CART_KEY = 'nexora-carrito';
 
 @Injectable({ providedIn: 'root' })
@@ -53,20 +52,83 @@ export class CarritoService {
       throw new Error('La cantidad debe ser un número entero mayor que cero.');
     }
 
-    return this.http.post<ArticuloCarrito>(`${API_URL}/${CLIENTE_ID}/articulos`, {
+    const clienteId = this.obtenerClienteId();
+    return this.http.post<ArticuloCarrito>(`${API_URL}/${clienteId}/articulos`, {
       productoId: producto.id,
       titulo: producto.titulo,
       precio: producto.precio,
       imagen: producto.imagen,
       cantidad,
-    }).pipe(tap((articulo) => this.actualizarEstado(articulo)));
+    }, { headers: this.encabezadosAutorizados() })
+      .pipe(tap((articulo) => this.actualizarEstado(articulo)));
+  }
+
+  cargarCarrito(): Observable<ArticuloCarrito[]> {
+    const clienteId = this.obtenerClienteId();
+    return this.http.get<ArticuloCarrito[]>(`${API_URL}/${clienteId}`, {
+      headers: this.encabezadosAutorizados(),
+    }).pipe(tap((articulos) => this.guardarEstado(articulos)));
+  }
+
+  actualizarCantidad(productoId: number, cantidad: number): Observable<void> {
+    if (!Number.isInteger(cantidad) || cantidad <= 0) {
+      throw new Error('La cantidad debe ser un número entero mayor que cero.');
+    }
+
+    const clienteId = this.obtenerClienteId();
+    const estadoAnterior = this.articulos();
+    this.reemplazarCantidad(productoId, cantidad);
+    return this.http.put<void>(`${API_URL}/${clienteId}/articulos/${productoId}`, { cantidad }, {
+      headers: this.encabezadosAutorizados(),
+    }).pipe(catchError((error: unknown) => {
+      this.guardarEstado(estadoAnterior);
+      return throwError(() => error);
+    }));
+  }
+
+  eliminarArticulo(productoId: number): Observable<void> {
+    const clienteId = this.obtenerClienteId();
+    const estadoAnterior = this.articulos();
+    this.guardarEstado(estadoAnterior.filter((articulo) => articulo.productoId !== productoId));
+    return this.http.delete<void>(`${API_URL}/${clienteId}/articulos/${productoId}`, {
+      headers: this.encabezadosAutorizados(),
+    }).pipe(catchError((error: unknown) => {
+      this.guardarEstado(estadoAnterior);
+      return throwError(() => error);
+    }));
   }
 
   private actualizarEstado(articulo: ArticuloCarrito): void {
-    const otrosArticulos = this.articulos().filter((item) => item.productoId !== articulo.productoId);
-    const actualizados = [...otrosArticulos, articulo];
-    this.articulos.set(actualizados);
-    sessionStorage.setItem(SESSION_CART_KEY, JSON.stringify(actualizados));
+    const articulos = [...this.articulos()];
+    const indice = articulos.findIndex((item) => item.productoId === articulo.productoId);
+    if (indice < 0) articulos.push(articulo);
+    else articulos[indice] = articulo;
+    this.guardarEstado(articulos);
+  }
+
+  private reemplazarCantidad(productoId: number, cantidad: number): void {
+    this.guardarEstado(this.articulos().map((articulo) =>
+      articulo.productoId === productoId ? { ...articulo, cantidad } : articulo,
+    ));
+  }
+
+  private guardarEstado(articulos: ArticuloCarrito[]): void {
+    this.articulos.set(articulos);
+    sessionStorage.setItem(SESSION_CART_KEY, JSON.stringify(articulos));
+  }
+
+  private obtenerClienteId(): string {
+    const sesion = this.sesion.obtener();
+    if (!sesion || this.sesion.rol() !== 'cliente') {
+      throw new Error('Inicia sesión con una cuenta de cliente para administrar el carrito.');
+    }
+    return String(sesion.id);
+  }
+
+  private encabezadosAutorizados(): HttpHeaders {
+    const autorizacion = this.sesion.autorizacion();
+    if (!autorizacion) throw new Error('La sesión no es válida. Inicia sesión nuevamente.');
+    return new HttpHeaders({ Authorization: autorizacion });
   }
 
   private leerCarrito(): ArticuloCarrito[] {
