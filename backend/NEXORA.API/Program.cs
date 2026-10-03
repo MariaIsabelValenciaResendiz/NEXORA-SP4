@@ -48,6 +48,9 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddSingleton<IRepositorioCarrito, RepositorioCarritoMemoria>();
 builder.Services.AddScoped<AgregarArticuloAlCarrito>();
+builder.Services.AddScoped<IAgregarArticuloAlCarrito>(services =>
+    services.GetRequiredService<AgregarArticuloAlCarrito>());
+builder.Services.AddScoped<IGestionarCarrito, GestionarCarrito>();
 
 var app = builder.Build();
 
